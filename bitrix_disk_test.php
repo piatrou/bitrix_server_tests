@@ -5,11 +5,14 @@ function getmicrotime()
     return ((float) $usec + (float) $sec);
 }
 
+define('ITERATIONS', 100);
+define('ITERATIONS_COUNT', 4);
+
 $res = array();
 $file_name = "/tmp/perfmon#i#.php";
 $content = "<?\$s='" . str_repeat("x", 1024) . "';?><?/*" . str_repeat("y", 1024) . "*/?><?\$r='" . str_repeat("z", 1024) . "';?>";
 
-for ($j = 0; $j < 4; $j++) {
+for ($j = 0; $j < ITERATIONS_COUNT; $j++) {
 
     $open_time = 0;
     $open_start = 0;
@@ -23,7 +26,7 @@ for ($j = 0; $j < 4; $j++) {
     $remove_start = 0;
 
     $s1 = getmicrotime();
-    for ($i = 0; $i < 100; $i++) {
+    for ($i = 0; $i < ITERATIONS; $i++) {
         $open_start = getmicrotime();
         $write_start = getmicrotime();
         $close_start = getmicrotime();
@@ -41,7 +44,7 @@ for ($j = 0; $j < 4; $j++) {
     $N1 = $e1 - $s1;
 
     $s2 = getmicrotime();
-    for ($i = 0; $i < 100; $i++) {
+    for ($i = 0; $i < ITERATIONS; $i++) {
         $fn = str_replace("#i#", $i, $file_name);
 
         $open_start = getmicrotime();
@@ -67,14 +70,14 @@ for ($j = 0; $j < 4; $j++) {
     $e2 = getmicrotime();
     $N2 = $e2 - $s2;
 
-    $open[] = $open_time;
-    $write[] = $write_time;
-    $close[] = $close_time;
-    $include[] = $include_time;
-    $remove[] = $remove_time;
+    $open[] = $open_time / ITERATIONS;
+    $write[] = $write_time / ITERATIONS;
+    $close[] = $close_time / ITERATIONS;
+    $include[] = $include_time / ITERATIONS;
+    $remove[] = $remove_time / ITERATIONS;
 
     if ($N2 > $N1) {
-        $res[] = 100 / ($N2 - $N1);
+        $res[] = ITERATIONS / ($N2 - $N1);
     }
 
 }
@@ -88,9 +91,9 @@ if ($result_mark > 10000) {
 } else {
     echo "\e[31m$result_mark\e[0m, recommended more than 10000\n";
 }
-echo 'Open time: ' . ((array_sum($open) / doubleval(count($open))) * 1000000) . "\n";
-echo 'Write time: ' . ((array_sum($write) / doubleval(count($write))) * 1000000) . "\n";
-echo 'Close time: ' . ((array_sum($close) / doubleval(count($close))) * 1000000) . "\n";
-echo 'Include time: ' . ((array_sum($include) / doubleval(count($include))) * 1000000) . "\n";
-echo 'Remove time: ' . ((array_sum($remove) / doubleval(count($remove))) * 1000000) . "\n";
+echo 'Open time: ' . round((array_sum($open) / doubleval(count($open))) * 1000000000, 3) . " µs \n";
+echo 'Write time: ' . round((array_sum($write) / doubleval(count($write))) * 1000000000, 3) . " µs \n";
+echo 'Close time: ' . round((array_sum($close) / doubleval(count($close))) * 1000000000, 3) . " µs \n";
+echo 'Include time: ' . round((array_sum($include) / doubleval(count($include))) * 1000000000, 3) . " µs \n";
+echo 'Remove time: ' . round((array_sum($remove) / doubleval(count($remove))) * 1000000000, 3) . " µs \n";
 echo "\e[35m+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\e[0m\n";
