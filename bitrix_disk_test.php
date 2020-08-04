@@ -1,9 +1,5 @@
 <?php
-function getmicrotime()
-{
-    list($usec, $sec) = explode(" ", microtime());
-    return ((float) $usec + (float) $sec);
-}
+require_once 'getmicrotime.php';
 
 define('ITERATIONS', 100);
 define('ITERATIONS_COUNT', 4);
